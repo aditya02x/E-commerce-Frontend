@@ -34,5 +34,9 @@ export const createProduct = async (data) => {
   const res = await API.post("/products", data);
   return res.data;
 };
+export const createOrder = async (data) => {
+  const res = await API.post("/orders", data);
+  return res.data;
+};
 
 export default API;
