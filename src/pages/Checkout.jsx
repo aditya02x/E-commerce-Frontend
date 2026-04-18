@@ -1,31 +1,69 @@
 import { useState } from "react";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { createOrder } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
+  const { cart, clearCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    name: "",
-    email: "",
     address: "",
     city: "",
     zip: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const [placed, setPlaced] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const totalPrice = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // simple validation
-    if (!form.name || !form.email || !form.address) {
-      alert("Please fill all required fields");
+    if (!user) {
+      navigate("/auth");
       return;
     }
 
-    // simulate order
-    setPlaced(true);
+    if (cart.length === 0) {
+      alert("Cart is empty");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const orderData = {
+        orderItems: cart.map((item) => ({
+          name: item.name,
+          qty: item.quantity,
+          price: item.price,
+          image: item.image,
+          productId: item._id,
+        })),
+        shippingAddress: form,
+        totalPrice,
+      };
+
+      await createOrder(orderData);
+
+      clearCart();
+      setPlaced(true);
+    } catch (error) {
+      alert("Order failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (placed) {
@@ -33,8 +71,15 @@ const Checkout = () => {
       <div className="text-center py-24">
         <h1 className="text-3xl font-semibold">Order Placed 🎉</h1>
         <p className="text-gray-500 mt-4">
-          Thank you for your purchase. This is a demo checkout.
+          Your order has been successfully created.
         </p>
+
+        <button
+          onClick={() => navigate("/shop")}
+          className="mt-6 bg-black text-white px-6 py-3 rounded-lg"
+        >
+          Continue Shopping
+        </button>
       </div>
     );
   }
@@ -45,29 +90,9 @@ const Checkout = () => {
       {/* FORM */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 border border-gray-200 p-6 rounded-xl"
+        className="border border-gray-200 p-6 rounded-xl space-y-4"
       >
-        <h2 className="text-xl font-semibold mb-2">
-          Shipping Details
-        </h2>
-
-        <input
-          type="text"
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-          className="w-full border border-gray-200 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email Address"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full border border-gray-200 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
-        />
+        <h2 className="text-xl font-semibold">Checkout</h2>
 
         <input
           type="text"
@@ -75,53 +100,58 @@ const Checkout = () => {
           placeholder="Address"
           value={form.address}
           onChange={handleChange}
-          className="w-full border border-gray-200 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
+          className="w-full border px-4 py-2 rounded-lg"
         />
 
-        <div className="flex gap-4">
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            value={form.city}
-            onChange={handleChange}
-            className="w-full border border-gray-200 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
-          />
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          value={form.city}
+          onChange={handleChange}
+          className="w-full border px-4 py-2 rounded-lg"
+        />
 
-          <input
-            type="text"
-            name="zip"
-            placeholder="ZIP Code"
-            value={form.zip}
-            onChange={handleChange}
-            className="w-full border border-gray-200 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
-          />
-        </div>
+        <input
+          type="text"
+          name="zip"
+          placeholder="ZIP Code"
+          value={form.zip}
+          onChange={handleChange}
+          className="w-full border px-4 py-2 rounded-lg"
+        />
 
-        <button className="w-full bg-black text-white py-3 rounded-lg hover:opacity-90 transition mt-4">
-          Place Order
+        <button
+          disabled={loading}
+          className="w-full bg-black text-white py-3 rounded-lg"
+        >
+          {loading ? "Placing Order..." : "Place Order"}
         </button>
       </form>
 
-      {/* ORDER SUMMARY */}
+      {/* SUMMARY */}
       <div className="border border-gray-200 p-6 rounded-xl h-fit">
-        <h2 className="text-xl font-semibold mb-4">
-          Order Summary
-        </h2>
+        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
 
-        <div className="flex justify-between text-gray-500 mb-2">
-          <span>Items</span>
-          <span>₹6999</span>
+        <div className="space-y-3">
+          {cart.map((item) => (
+            <div
+              key={item._id}
+              className="flex justify-between text-sm text-gray-600"
+            >
+              <span>
+                {item.name} × {item.quantity}
+              </span>
+              <span>₹{item.price * item.quantity}</span>
+            </div>
+          ))}
         </div>
 
-        <div className="flex justify-between text-gray-500 mb-2">
-          <span>Shipping</span>
-          <span>Free</span>
-        </div>
+        <hr className="my-4" />
 
-        <div className="flex justify-between font-semibold text-lg mt-4">
+        <div className="flex justify-between font-semibold text-lg">
           <span>Total</span>
-          <span>₹6999</span>
+          <span>₹{totalPrice}</span>
         </div>
       </div>
     </div>
