@@ -36,7 +36,6 @@ const Shop = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
 
-  // Filter logic
   const filteredProducts = allProducts.filter((product) => {
     const matchSearch = product.name
       .toLowerCase()
@@ -49,49 +48,65 @@ const Shop = () => {
   });
 
   return (
-    <div>
+    <div className="max-w-7xl mx-auto px-6 py-10">
+
       {/* HEADER */}
       <div className="mb-10">
-        <h1 className="text-3xl font-semibold">Shop</h1>
+        <h1 className="text-4xl font-semibold tracking-tight">
+          Shop Collection
+        </h1>
         <p className="text-gray-500 mt-2">
-          Explore all premium products
+          Discover premium products crafted for modern lifestyle
         </p>
       </div>
 
       {/* FILTER BAR */}
-      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-8">
-        
-        {/* Search */}
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border border-gray-200 px-4 py-2 rounded-lg w-full md:w-1/3 outline-none focus:ring-2 focus:ring-black"
-        />
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-10">
 
-        {/* Category Filter */}
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border border-gray-200 px-4 py-2 rounded-lg outline-none focus:ring-2 focus:ring-black"
-        >
-          <option>All</option>
-          <option>Accessories</option>
-          <option>Footwear</option>
-          <option>Clothing</option>
-          <option>Bags</option>
-        </select>
+        {/* SEARCH */}
+        <div className="relative w-full md:w-1/3">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full border border-gray-200 px-4 py-3 rounded-full outline-none focus:ring-2 focus:ring-black transition"
+          />
+        </div>
+
+        {/* CATEGORY */}
+        <div className="flex gap-2 flex-wrap">
+
+          {["All", "Accessories", "Footwear", "Clothing", "Bags"].map(
+            (cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`px-4 py-2 rounded-full text-sm border transition ${
+                  category === cat
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-black"
+                }`}
+              >
+                {cat}
+              </button>
+            )
+          )}
+
+        </div>
       </div>
 
       {/* PRODUCTS */}
       {filteredProducts.length > 0 ? (
         <ProductGrid products={filteredProducts} />
       ) : (
-        <p className="text-gray-500 text-center mt-20">
-          No products found
-        </p>
+        <div className="text-center py-20">
+          <p className="text-gray-500 text-lg">
+            No products found
+          </p>
+        </div>
       )}
+
     </div>
   );
 };
