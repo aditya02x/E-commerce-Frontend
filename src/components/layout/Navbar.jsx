@@ -13,12 +13,13 @@ const Navbar = () => {
   return (
     <header className="w-full border-b border-gray-200 bg-white/70 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        
+
         <Link to="/" className="text-xl font-semibold tracking-tight">
           VibeStore
         </Link>
 
         <nav className="flex items-center gap-6 text-sm">
+
           <Link to="/shop" className="hover:text-indigo-500 transition">
             Shop
           </Link>
@@ -31,8 +32,12 @@ const Navbar = () => {
             <>
               <span className="text-gray-500">{user.name}</span>
 
-              <Link to="/admin" className="font-medium hover:text-indigo-500">
+              <Link to="/admin" className="hover:text-indigo-500">
                 Admin
+              </Link>
+
+              <Link to="/admin/orders" className="hover:text-indigo-500">
+                Orders
               </Link>
 
               <button
@@ -47,6 +52,7 @@ const Navbar = () => {
               Login
             </Link>
           )}
+
         </nav>
       </div>
     </header>

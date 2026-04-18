@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import AdminOrders from "./pages/AdminOrders";
 
 // Auth
 import { useAuth } from "./context/AuthContext";
@@ -38,6 +39,15 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/auth" element={<Auth />} />
+          <Route
+  path="/admin/orders"
+  element={
+    <ProtectedRoute>
+      <AdminOrders />
+    </ProtectedRoute>
+  }
+/>
+          
 
           {/* PROTECTED ROUTE */}
           <Route
