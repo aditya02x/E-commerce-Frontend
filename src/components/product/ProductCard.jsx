@@ -6,39 +6,49 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
 
   return (
-    <div
-      onClick={() => navigate(`/product/${product._id}`)}
-      className="cursor-pointer group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition"
-    >
-      <div className="w-full h-64 bg-gray-100 overflow-hidden relative">
+    <div className="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300">
+
+      {/* IMAGE */}
+      <div className="relative h-72 overflow-hidden">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition"
+          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
         />
 
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(product);
-            }}
-            className="bg-white px-4 py-2 rounded-lg text-sm"
-          >
-            Add to Cart
-          </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            addToCart(product);
+          }}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black text-white px-5 py-2 rounded-full text-sm opacity-0 group-hover:opacity-100 transition"
+        >
+          Add to Cart
+        </button>
+      </div>
+
+      {/* CONTENT */}
+      <div
+        onClick={() => navigate(`/product/${product._id}`)}
+        className="p-4 cursor-pointer"
+      >
+        <h3 className="font-medium text-lg">{product.name}</h3>
+
+        <p className="text-gray-500 text-sm mt-1">
+          {product.category}
+        </p>
+
+        <div className="flex justify-between items-center mt-3">
+          <span className="font-semibold text-black">
+            ₹{product.price}
+          </span>
+
+          <span className="text-xs text-gray-400">
+            View details →
+          </span>
         </div>
       </div>
 
-      <div className="p-4">
-        <h3 className="text-sm font-medium">{product.name}</h3>
-        <p className="text-gray-500 text-sm mt-1">{product.category}</p>
-
-        <div className="flex justify-between mt-3">
-          <span className="font-semibold">₹{product.price}</span>
-          <span className="text-xs text-gray-400">View →</span>
-        </div>
-      </div>
     </div>
   );
 };
