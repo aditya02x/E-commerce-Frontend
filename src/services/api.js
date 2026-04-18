@@ -38,5 +38,9 @@ export const createOrder = async (data) => {
   const res = await API.post("/orders", data);
   return res.data;
 };
+export const getAllOrders = async () => {
+  const res = await API.get("/orders/admin");
+  return res.data;
+};
 
 export default API;
